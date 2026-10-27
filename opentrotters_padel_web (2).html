@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opentrotters Padel Club</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        padel: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        league: '#f97316' // Vibrant Orange for Official League Dates
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-padel-500 selection:text-white">
+
+    <!-- TOP HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <!-- Brand / Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-padel-600 to-emerald-400 flex items-center justify-center text-white font-black text-xl shadow-md shadow-padel-600/20">
+                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-slate-900 text-lg sm:text-xl tracking-tight leading-none">OPENTROTTERS</h1>
+                    <span class="text-[10px] font-extrabold tracking-wider text-padel-600 uppercase">Equipo de Pádel</span>
+                </div>
+            </div>
+
+            <!-- Header Actions & Identity Selector -->
+            <div class="flex items-center gap-2">
+                <!-- Settings & Sync Button -->
+                <button onclick="openSettingsModal()" title="Configuración y Sincronización" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition border border-slate-200">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <!-- Active Player Identity Dropdown -->
+                <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                    <i class="fa-solid fa-user-circle text-padel-600 text-base"></i>
+                    <div class="flex flex-col">
+                        <label for="identitySelect" class="text-[9px] uppercase font-bold text-slate-400 leading-none">Soy jugador:</label>
+                        <select id="identitySelect" onchange="changeIdentity(this.value)" class="bg-transparent text-xs font-bold text-slate-900 focus:outline-none cursor-pointer">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN NAVIGATION TABS (Strict requested order) -->
+        <nav class="bg-slate-900 text-white shadow-inner">
+            <div class="max-w-7xl mx-auto px-2 flex overflow-x-auto hide-scrollbar text-xs font-medium">
+                <button onclick="switchTab('plantilla')" id="tab-btn-plantilla" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-padel-500 text-padel-400 font-bold transition-all">
+                    <i class="fa-solid fa-users"></i> 1. Plantilla
+                </button>
+                <button onclick="switchTab('partidos')" id="tab-btn-partidos" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-trophy"></i> 2. Partidos
+                </button>
+                <button onclick="switchTab('calendario')" id="tab-btn-calendario" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-calendar-days"></i> 3. Calendario
+                </button>
+                <button onclick="switchTab('rankings')" id="tab-btn-rankings" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-chart-line"></i> 4. Rankings
+                </button>
+                <button onclick="switchTab('disponibilidad')" id="tab-btn-disponibilidad" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-square-check"></i> 5. Disponibilidad Liga
+                </button>
+                <button onclick="switchTab('fotos')" id="tab-btn-fotos" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-camera"></i> 6. Fotografías
+                </button>
+                <button onclick="switchTab('chat')" id="tab-btn-chat" class="tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-comments"></i> 7. Chat Grupal
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- STORAGE / SYNC STATUS INDICATOR BAR -->
+    <div id="syncStatusBar" class="bg-emerald-600 text-white text-[11px] font-semibold py-1 px-4 text-center flex items-center justify-center gap-2">
+        <i class="fa-solid fa-hard-drive"></i>
+        <span id="syncStatusText">Persistencia Local Activa (Datos guardados permanentemente en tu dispositivo)</span>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- 1. PLANTILLA -->
+        <section id="tab-plantilla" class="tab-content block space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-padel-600"></i> Plantilla Opentrotters
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">18 Jugadores divididos en los 3 subgrupos oficiales. Puedes modificar tu lado de pista habitual.</p>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-bold bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <span class="flex items-center gap-1 text-emerald-700"><i class="fa-solid fa-circle text-[8px]"></i> Drive</span>
+                    <span class="flex items-center gap-1 text-blue-700"><i class="fa-solid fa-circle text-[8px]"></i> Revés</span>
+                    <span class="flex items-center gap-1 text-purple-700"><i class="fa-solid fa-circle text-[8px]"></i> Ambos</span>
+                </div>
+            </div>
+
+            <!-- 3 Subgroups Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="groupsContainer">
+                <!-- Group 1, Group 2, Group 3 injected via JS -->
+            </div>
+        </section>
+
+        <!-- 2. PARTIDOS -->
+        <section id="tab-partidos" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-padel-600"></i> Partidos y Resultados
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Crea partidas entre compañeros, deja huecos libres o invitados, asigna marcadores y gestiona resultados.</p>
+                </div>
+                <button onclick="openMatchModal()" class="inline-flex items-center justify-center gap-2 bg-padel-600 hover:bg-padel-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition active:scale-95">
+                    <i class="fa-solid fa-plus"></i> Crear Nuevo Partido
+                </button>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto hide-scrollbar">
+                <button onclick="filterMatches('all')" id="filter-match-all" class="match-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm">Todos los partidos</button>
+                <button onclick="filterMatches('upcoming')" id="filter-match-upcoming" class="match-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">Próximos / Pendientes</button>
+                <button onclick="filterMatches('completed')" id="filter-match-completed" class="match-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">Finalizados</button>
+            </div>
+
+            <!-- Match Grid -->
+            <div id="matchesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- 3. CALENDARIO -->
+        <section id="tab-calendario" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <button onclick="changeMonth(-1)" class="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 text-slate-700 transition"><i class="fa-solid fa-chevron-left"></i></button>
+                        <h2 id="calendarMonthTitle" class="text-xl font-extrabold text-slate-900 min-w-[180px] text-center">Noviembre 2026</h2>
+                        <button onclick="changeMonth(1)" class="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-100 text-slate-700 transition"><i class="fa-solid fa-chevron-right"></i></button>
+                        <button onclick="resetCalendarToToday()" class="text-xs font-bold text-padel-600 bg-padel-50 px-3 py-1.5 rounded-lg border border-padel-200 hover:bg-padel-100 transition">Hoy</button>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs font-bold bg-orange-50 text-orange-800 px-3 py-2 rounded-xl border border-orange-200">
+                        <i class="fa-solid fa-star text-orange-500 text-sm"></i>
+                        <span>5 Jornadas de Liga Oficiales Destacadas (Naranja)</span>
+                    </div>
+                </div>
+
+                <!-- Days of week -->
+                <div class="grid grid-cols-7 gap-1 text-center font-extrabold text-xs text-slate-400 uppercase tracking-wider">
+                    <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div id="calendarGrid" class="grid grid-cols-7 gap-1 md:gap-2">
+                    <!-- Calendar days injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. RANKINGS Y ANALÍTICAS -->
+        <section id="tab-rankings" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-padel-600"></i> Rankings y Analíticas
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Estadísticas calculadas automáticamente según los partidos disputados.</p>
+                </div>
+                <!-- Period Selector -->
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-slate-500">Filtrar por Plazo:</label>
+                    <select id="rankingPeriodSelect" onchange="renderRankings()" class="bg-slate-100 text-xs font-bold text-slate-800 p-2.5 rounded-xl border border-slate-200 focus:outline-none">
+                        <option value="all">General Acumulado (Toda la temporada)</option>
+                        <option value="p1">Plazo 1 (Nov 2026 - Dic 2026)</option>
+                        <option value="p2">Plazo 2 (Dic 2026 - Ene 2027)</option>
+                        <option value="p3">Plazo 3 (Ene 2027 - Feb 2027)</option>
+                        <option value="p4">Plazo 4 (Feb 2027 - Mar 2027)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Individual Ranking -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-user text-padel-600"></i> Ranking Individual
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-[10px] font-extrabold uppercase text-slate-400 border-b border-slate-100 bg-slate-50">
+                                    <th class="p-2.5">#</th>
+                                    <th class="p-2.5">Jugador</th>
+                                    <th class="p-2.5 text-center">PJ</th>
+                                    <th class="p-2.5 text-center">PG</th>
+                                    <th class="p-2.5 text-center">PP</th>
+                                    <th class="p-2.5 text-center">% Vic</th>
+                                    <th class="p-2.5 text-center">Sets (W/L)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="individualRankingBody" class="text-xs font-medium text-slate-700 divide-y divide-slate-100">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pairs Ranking -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-user-group text-padel-600"></i> Ranking de Parejas
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-[10px] font-extrabold uppercase text-slate-400 border-b border-slate-100 bg-slate-50">
+                                    <th class="p-2.5">#</th>
+                                    <th class="p-2.5">Pareja</th>
+                                    <th class="p-2.5 text-center">PJ</th>
+                                    <th class="p-2.5 text-center">PG</th>
+                                    <th class="p-2.5 text-center">PP</th>
+                                    <th class="p-2.5 text-center">% Vic</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pairsRankingBody" class="text-xs font-medium text-slate-700 divide-y divide-slate-100">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. DISPONIBILIDAD LIGA -->
+        <section id="tab-disponibilidad" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-square-check text-orange-500"></i> Disponibilidad Jornada de Liga
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Indica tu disponibilidad para las 5 jornadas oficiales en los 3 tramos horarios (12:00, 14:30 y 17:00).</p>
+                    </div>
+                    <div class="text-xs font-bold text-emerald-800 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200 flex items-center gap-2">
+                        <i class="fa-solid fa-user-lock text-emerald-600"></i>
+                        <span>Editando como: <strong id="currentUserLabel" class="underline text-emerald-950">Sergi</strong></span>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex items-center gap-4 text-xs font-semibold bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span class="flex items-center gap-1 text-emerald-700"><i class="fa-solid fa-circle text-xs"></i> Disponible</span>
+                    <span class="flex items-center gap-1 text-amber-700"><i class="fa-solid fa-circle text-xs"></i> Duda</span>
+                    <span class="flex items-center gap-1 text-rose-700"><i class="fa-solid fa-circle text-xs"></i> No Disponible</span>
+                </div>
+
+                <!-- 5 Official Dates Tables -->
+                <div id="leagueAvailabilityModules" class="space-y-8">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. FOTOGRAFÍAS -->
+        <section id="tab-fotos" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-camera text-padel-600"></i> Fotografías de Equipo
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Galería fotográfica de las jornadas y pachangas. El borrado requiere contraseña de admin (Admin2027).</p>
+                </div>
+                <button onclick="openPhotoModal()" class="inline-flex items-center justify-center gap-2 bg-padel-600 hover:bg-padel-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition active:scale-95">
+                    <i class="fa-solid fa-upload"></i> Subir Foto
+                </button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div id="photosGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Photos injected via JS -->
+            </div>
+        </section>
+
+        <!-- 7. CHAT GRUPAL -->
+        <section id="tab-chat" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[650px]">
+                <!-- Chat Header -->
+                <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-padel-600 flex items-center justify-center text-white font-bold">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-sm">Vestuario Opentrotters</h3>
+                            <p class="text-[11px] text-slate-500">Chat entre los 18 integrantes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Body -->
+                <div id="chatMessagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-100/40">
+                    <!-- Messages injected via JS -->
+                </div>
+
+                <!-- Emojis Bar -->
+                <div class="px-3 py-2 bg-white border-t border-slate-100 flex items-center gap-2 overflow-x-auto hide-scrollbar">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Emojis:</span>
+                    <button onclick="addEmoji('🎾')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">🎾</button>
+                    <button onclick="addEmoji('🏆')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">🏆</button>
+                    <button onclick="addEmoji('💪')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">💪</button>
+                    <button onclick="addEmoji('🔥')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">🔥</button>
+                    <button onclick="addEmoji('👏')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">👏</button>
+                    <button onclick="addEmoji('🥇')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">🥇</button>
+                    <button onclick="addEmoji('🍺')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">🍺</button>
+                    <button onclick="addEmoji('😎')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-sm">😎</button>
+                </div>
+
+                <!-- Chat Form -->
+                <form id="chatForm" onsubmit="sendChatMessage(event)" class="p-3 bg-white border-t border-slate-200 flex items-center gap-2 rounded-b-2xl">
+                    <input type="text" id="chatInput" placeholder="Escribe un mensaje en el vestuario..." required class="flex-1 bg-slate-100 border border-slate-200 text-xs font-medium px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-padel-500">
+                    <button type="submit" class="bg-padel-600 hover:bg-padel-700 text-white font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 shadow transition active:scale-95">
+                        <span>Enviar</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MODAL: CREAR PARTIDO -->
+    <div id="matchModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-extrabold text-slate-900 text-base">Programar / Registrar Partido</h3>
+                <button onclick="closeMatchModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="matchForm" onsubmit="saveMatch(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Fecha</label>
+                        <input type="date" id="matchDate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:ring-2 focus:ring-padel-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Hora</label>
+                        <input type="time" id="matchTime" required value="18:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:ring-2 focus:ring-padel-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- PAIR 1 -->
+                <div class="bg-padel-50/50 p-3.5 rounded-xl border border-padel-200 space-y-2">
+                    <span class="text-xs font-black text-padel-800 uppercase tracking-wider block">Pareja 1</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="matchP1" class="player-select bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold outline-none"></select>
+                        <select id="matchP2" class="player-select bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold outline-none"></select>
+                    </div>
+                </div>
+
+                <!-- PAIR 2 -->
+                <div class="bg-blue-50/50 p-3.5 rounded-xl border border-blue-200 space-y-2">
+                    <span class="text-xs font-black text-blue-800 uppercase tracking-wider block">Pareja 2</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="matchP3" class="player-select bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold outline-none"></select>
+                        <select id="matchP4" class="player-select bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold outline-none"></select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Estado del Partido</label>
+                    <select id="matchStatus" onchange="toggleScoreInput(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold">
+                        <option value="Próximo">Próximo (Pendiente)</option>
+                        <option value="Finalizado">Finalizado (Introducir Marcador)</option>
+                    </select>
+                </div>
+
+                <div id="scoreContainer" class="hidden space-y-1">
+                    <label class="block text-xs font-bold text-slate-600">Resultado (Formato: 6-3 6-7 6-2)</label>
+                    <input type="text" id="matchScore" placeholder="6-3 6-7 6-2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-padel-500 outline-none">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeMatchModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="bg-padel-600 hover:bg-padel-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow transition">Guardar Partido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SUBIR FOTO -->
+    <div id="photoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-extrabold text-slate-900 text-base">Añadir Foto al Equipo</h3>
+                <button onclick="closePhotoModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="photoForm" onsubmit="savePhoto(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">URL de la foto o Selecciona archivo local</label>
+                    <input type="url" id="photoUrl" placeholder="https://ejemplo.com/foto.jpg" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium mb-2">
+                    <div class="text-center text-xs font-bold text-slate-400 my-1">O sube desde tu teléfono / PC:</div>
+                    <input type="file" id="photoFileInput" accept="image/*" onchange="convertPhotoFile(this)" class="w-full text-xs font-medium text-slate-500 border border-slate-200 rounded-xl p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Título o Descripción</label>
+                    <input type="text" id="photoCaption" placeholder="Ej: Gran victoria en la jornada 1" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closePhotoModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="bg-padel-600 hover:bg-padel-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow">Guardar Foto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRMAR VERIFICACIÓN ADMIN (Para borrar foto) -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
+            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-slate-900 text-base">Contraseña de Administrador</h3>
+                <p class="text-xs text-slate-500 mt-1">Introduce la clave de administrador para borrar esta foto.</p>
+            </div>
+            <input type="password" id="adminPasswordInput" placeholder="Contraseña..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center text-xs font-bold outline-none focus:ring-2 focus:ring-rose-500">
+            <div class="flex items-center justify-center gap-2 pt-2">
+                <button onclick="closeAdminModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Cancelar</button>
+                <button onclick="confirmAdminDelete()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-5 py-2 rounded-xl shadow">Borrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURACIÓN Y SINCRONIZACIÓN -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-padel-600"></i> Sincronización y Respaldo
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- JSON Backup / Export / Import -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-export text-padel-600"></i> Copia de Seguridad Manual (WhatsApp)
+                </h4>
+                <p class="text-[11px] text-slate-500">Puedes exportar todo el estado del equipo en un archivo JSON y compartirlo con los demás compañeros para que lo importen.</p>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportDataJSON()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow">
+                        <i class="fa-solid fa-download"></i> Exportar JSON
+                    </button>
+                    <label class="flex-1 bg-padel-600 hover:bg-padel-700 text-white font-bold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer shadow">
+                        <i class="fa-solid fa-upload"></i> Importar JSON
+                        <input type="file" accept=".json" onchange="importDataJSON(this)" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Firebase Custom Cloud Setup -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-cloud text-blue-600"></i> Conectar Nube Firebase (Opcional)
+                </h4>
+                <p class="text-[11px] text-slate-500">Si deseas sincronización automática instantánea en tiempo real entre los 18 móviles, introduce tus credenciales de proyecto de Firebase Firestore:</p>
+                <textarea id="firebaseConfigInput" rows="4" placeholder='{ "apiKey": "...", "authDomain": "...", "projectId": "..." }' class="w-full bg-white border border-slate-200 rounded-xl p-2 text-[11px] font-mono focus:ring-2 focus:ring-padel-500 outline-none"></textarea>
+                <button onclick="saveFirebaseCustomConfig()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 rounded-lg shadow">
+                    Guardar Configuración Firebase
+                </button>
+            </div>
+
+            <!-- Danger Zone / Reset -->
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <button onclick="resetDefaultData()" class="text-rose-600 hover:text-rose-700 font-bold text-xs flex items-center gap-1">
+                    <i class="fa-solid fa-rotate-left"></i> Restablecer Datos de Fábrica
+                </button>
+                <button onclick="closeSettingsModal()" class="bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX VIEWER -->
+    <div id="lightboxModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" class="max-w-full max-h-[80vh] rounded-xl object-contain shadow-2xl">
+        <p id="lightboxCaption" class="text-white text-sm font-semibold mt-4 text-center"></p>
+    </div>
+
+    <!-- MAIN JAVASCRIPT APP LOGIC -->
+    <script>
+        // 18 PLAYERS BY SUBGROUP
+        const TEAM_GROUPS = {
+            "Grupo 1": ["Sergi", "Salva", "Manu Yerga", "Toro", "Álvaro J", "Adri"],
+            "Grupo 2": ["Tomás", "Alberto", "Esteban", "Alex", "Álvaro L", "Cristian"],
+            "Grupo 3": ["Antón", "José", "Aitor", "Juan", "Rafa", "Mauri"]
+        };
+        const ALL_PLAYERS = Object.values(TEAM_GROUPS).flat();
+
+        // 5 OFFICIAL LEAGUE DATES
+        const LEAGUE_DATES = [
+            { date: '2026-11-28', label: 'Jornada 1: 28/11/2026' },
+            { date: '2026-12-12', label: 'Jornada 2: 12/12/2026' },
+            { date: '2027-01-23', label: 'Jornada 3: 23/01/2027' },
+            { date: '2027-02-13', label: 'Jornada 4: 13/02/2027' },
+            { date: '2027-03-20', label: 'Jornada 5: 20/03/2027' }
+        ];
+        const LEAGUE_SLOTS = ["12:00", "14:30", "17:00"];
+
+        // LOCAL STORAGE KEY
+        const STORAGE_KEY = 'opentrotters_app_v2';
+
+        // DEFAULT DATA SEED
+        const DEFAULT_STATE = {
+            players: {
+                "Sergi": { position: "Ambos" }, "Salva": { position: "Drive" }, "Manu Yerga": { position: "Revés" },
+                "Toro": { position: "Ambos" }, "Álvaro J": { position: "Drive" }, "Adri": { position: "Revés" },
+                "Tomás": { position: "Ambos" }, "Alberto": { position: "Drive" }, "Esteban": { position: "Revés" },
+                "Alex": { position: "Ambos" }, "Álvaro L": { position: "Drive" }, "Cristian": { position: "Revés" },
+                "Antón": { position: "Ambos" }, "José": { position: "Drive" }, "Aitor": { position: "Revés" },
+                "Juan": { position: "Ambos" }, "Rafa": { position: "Drive" }, "Mauri": { position: "Revés" }
+            },
+            matches: [
+                {
+                    id: 'm1',
+                    date: '2026-11-20',
+                    time: '18:30',
+                    p1: 'Sergi', p2: 'Salva',
+                    p3: 'Manu Yerga', p4: 'Toro',
+                    status: 'Finalizado',
+                    score: '6-3 4-6 6-4',
+                    createdBy: 'Sergi'
+                },
+                {
+                    id: 'm2',
+                    date: '2026-11-25',
+                    time: '19:00',
+                    p1: 'Tomás', p2: 'Alberto',
+                    p3: 'Esteban', p4: 'Hueco Libre',
+                    status: 'Próximo',
+                    score: '',
+                    createdBy: 'Tomás'
+                }
+            ],
+            availability: {},
+            photos: [
+                {
+                    id: 'p1',
+                    url: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80',
+                    caption: 'Primer entrenamiento del equipo Opentrotters',
+                    uploader: 'Sergi',
+                    createdAt: Date.now() - 1000000
+                }
+            ],
+            messages: [
+                { id: 'msg1', sender: 'Sergi', text: '¡Bienvenidos a la web oficial de Opentrotters! 🎾🔥', createdAt: Date.now() - 500000 },
+                { id: 'msg2', sender: 'Salva', text: '¡A tope para la primera jornada de liga! 💪', createdAt: Date.now() - 200000 }
+            ]
+        };
+
+        // APPLICATION STATE IN MEMORY
+        let state = loadInitialState();
+        let currentUser = localStorage.getItem('opentrotters_active_user') || 'Sergi';
+        let currentMatchFilter = 'all';
+        let calendarDate = new Date(2026, 10, 1); // November 2026 default
+        let deletePhotoTargetId = null;
+        let base64PhotoTemp = "";
+
+        // LOAD STATE FROM STORAGE
+        function loadInitialState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) return JSON.parse(saved);
+            } catch (e) {
+                console.error("Error reading localStorage", e);
+            }
+            return DEFAULT_STATE;
+        }
+
+        // SAVE STATE TO LOCALSTORAGE INSTANTLY
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                document.getElementById('syncStatusText').innerText = "Persistencia Local Activa (Guardado permanentemente en este dispositivo)";
+            } catch (e) {
+                console.error("Error saving to localStorage", e);
+            }
+        }
+
+        // ON LOAD INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            initIdentitySelector();
+            initPlayerDropdowns();
+            renderPlantilla();
+            renderMatches();
+            renderCalendar();
+            renderRankings();
+            renderLeagueAvailability();
+            renderPhotos();
+            renderChatMessages();
+
+            // Fill Firebase config textarea if present
+            const savedFB = localStorage.getItem('opentrotters_fb_config');
+            if (savedFB) {
+                document.getElementById('firebaseConfigInput').value = savedFB;
+                document.getElementById('syncStatusText').innerText = "Conexión a Nube Firebase Configurada";
+            }
+        });
+
+        // IDENTITY SELECTION
+        function initIdentitySelector() {
+            const select = document.getElementById('identitySelect');
+            select.innerHTML = ALL_PLAYERS.map(p => `<option value="${p}">${p}</option>`).join('');
+            select.value = currentUser;
+            document.getElementById('currentUserLabel').innerText = currentUser;
+        }
+
+        function changeIdentity(val) {
+            currentUser = val;
+            localStorage.setItem('opentrotters_active_user', val);
+            document.getElementById('currentUserLabel').innerText = currentUser;
+            renderPlantilla();
+            renderLeagueAvailability();
+            showToast(`Identidad cambiada a: ${val}`, 'info');
+        }
+
+        // TAB SWITCHER
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all";
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).className = "tab-btn py-3 px-4 flex items-center gap-2 whitespace-nowrap border-b-2 border-padel-500 text-padel-400 font-bold transition-all";
+
+            if (tabName === 'rankings') renderRankings();
+            if (tabName === 'calendario') renderCalendar();
+        }
+
+        // 1. PLANTILLA RENDER & UPDATE
+        function renderPlantilla() {
+            const container = document.getElementById('groupsContainer');
+            container.innerHTML = Object.keys(TEAM_GROUPS).map(groupName => {
+                const members = TEAM_GROUPS[groupName];
+                return `
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                            <h3 class="font-black text-slate-900 text-sm tracking-wide uppercase">${groupName}</h3>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-2 py-0.5 rounded-full">${members.length} Jugadores</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${members.map(playerName => {
+                                const pData = state.players[playerName] || { position: 'Ambos' };
+                                const isMe = (playerName === currentUser);
+                                const posBadge = pData.position === 'Drive' 
+                                    ? '<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-table-tennis-paddle-ball"></i> Drive</span>'
+                                    : pData.position === 'Revés'
+                                    ? '<span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200"><i class="fa-solid fa-table-tennis-paddle-ball"></i> Revés</span>'
+                                    : '<span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200"><i class="fa-solid fa-arrows-rotate"></i> Ambos</span>';
+
+                                return `
+                                    <div class="p-3 rounded-xl border ${isMe ? 'border-padel-500 bg-padel-50/40 ring-1 ring-padel-500' : 'border-slate-100 bg-slate-50/50'} flex flex-col gap-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-7 h-7 rounded-full ${isMe ? 'bg-padel-600 text-white' : 'bg-slate-200 text-slate-600'} flex items-center justify-center font-bold text-xs">
+                                                    ${playerName.charAt(0)}
+                                                </div>
+                                                <span class="font-extrabold text-slate-900 text-xs">${playerName} ${isMe ? '<span class="text-[9px] font-black text-padel-600 uppercase">(Tú)</span>' : ''}</span>
+                                            </div>
+                                            <div>${posBadge}</div>
+                                        </div>
+                                        ${isMe ? `
+                                            <div class="mt-1 pt-2 border-t border-padel-200 flex items-center justify-between text-[11px]">
+                                                <span class="font-bold text-slate-500">Modificar lado de pista:</span>
+                                                <div class="flex gap-1">
+                                                    <button onclick="updateMyPosition('Drive')" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition ${pData.position === 'Drive' ? 'bg-emerald-600 text-white shadow' : 'bg-white text-slate-600 border border-slate-200'}">Drive</button>
+                                                    <button onclick="updateMyPosition('Revés')" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition ${pData.position === 'Revés' ? 'bg-blue-600 text-white shadow' : 'bg-white text-slate-600 border border-slate-200'}">Revés</button>
+                                                    <button onclick="updateMyPosition('Ambos')" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition ${pData.position === 'Ambos' ? 'bg-purple-600 text-white shadow' : 'bg-white text-slate-600 border border-slate-200'}">Ambos</button>
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateMyPosition(newPos) {
+            if (!state.players[currentUser]) state.players[currentUser] = {};
+            state.players[currentUser].position = newPos;
+            saveState();
+            renderPlantilla();
+            showToast(`Posición de ${currentUser} actualizada a: ${newPos}`, 'success');
+        }
+
+        // 2. PARTIDOS (Matches)
+        function initPlayerDropdowns() {
+            const selects = document.querySelectorAll('.player-select');
+            const optionsHtml = `
+                <option value="Hueco Libre">-- Hueco Libre --</option>
+                <option value="Invitado">Invitado</option>
+                ${ALL_PLAYERS.map(p => `<option value="${p}">${p}</option>`).join('')}
+            `;
+            selects.forEach(s => s.innerHTML = optionsHtml);
+        }
+
+        function filterMatches(filter) {
+            currentMatchFilter = filter;
+            document.querySelectorAll('.match-filter-btn').forEach(b => {
+                b.className = "match-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200";
+            });
+            document.getElementById(`filter-match-${filter}`).className = "match-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm";
+            renderMatches();
+        }
+
+        function renderMatches() {
+            const container = document.getElementById('matchesContainer');
+            let filtered = state.matches;
+            if (currentMatchFilter === 'upcoming') filtered = state.matches.filter(m => m.status === 'Próximo');
+            if (currentMatchFilter === 'completed') filtered = state.matches.filter(m => m.status === 'Finalizado');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-calendar-xmark text-slate-300 text-4xl mb-2"></i>
+                        <p class="text-xs font-bold text-slate-500">No hay partidos en esta categoría.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(m => {
+                const isFinished = m.status === 'Finalizado';
+                const hasOpenSlot = [m.p1, m.p2, m.p3, m.p4].includes('Hueco Libre');
+                
+                return `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border ${isFinished ? 'border-slate-200' : 'border-padel-200 ring-1 ring-padel-500/20'} flex flex-col justify-between space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-calendar-day text-padel-600"></i> ${m.date} - ${m.time} h
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${isFinished ? 'bg-slate-100 text-slate-700' : 'bg-emerald-100 text-emerald-800'}">
+                                    ${m.status}
+                                </span>
+                                <button onclick="deleteMatch('${m.id}')" title="Borrar partido" class="text-slate-400 hover:text-rose-600 text-xs transition p-1">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PAIRS DISPLAY -->
+                        <div class="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <!-- Pair 1 -->
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-extrabold text-padel-700 uppercase">Pareja 1</span>
+                                <div class="font-bold text-slate-800 flex flex-col">
+                                    <span class="${m.p1 === 'Hueco Libre' ? 'text-rose-500 italic' : ''}">${m.p1}</span>
+                                    <span class="${m.p2 === 'Hueco Libre' ? 'text-rose-500 italic' : ''}">${m.p2}</span>
+                                </div>
+                            </div>
+                            <!-- Pair 2 -->
+                            <div class="space-y-1 border-l border-slate-200 pl-3">
+                                <span class="text-[10px] font-extrabold text-blue-700 uppercase">Pareja 2</span>
+                                <div class="font-bold text-slate-800 flex flex-col">
+                                    <span class="${m.p3 === 'Hueco Libre' ? 'text-rose-500 italic' : ''}">${m.p3}</span>
+                                    <span class="${m.p4 === 'Hueco Libre' ? 'text-rose-500 italic' : ''}">${m.p4}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SCORE OR UNIRME ACTION -->
+                        ${isFinished ? `
+                            <div class="bg-slate-900 text-white rounded-xl py-2 px-3 text-center">
+                                <span class="text-[10px] text-slate-400 uppercase font-bold block">Resultado Final</span>
+                                <span class="text-sm font-black text-emerald-400 tracking-wider">${m.score || 'Sin resultado registrado'}</span>
+                            </div>
+                        ` : `
+                            ${hasOpenSlot ? `
+                                <button onclick="claimMatchSlot('${m.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-user-plus"></i> Unirme a la partida (${currentUser})
+                                </button>
+                            ` : `
+                                <div class="text-center text-[11px] font-bold text-slate-500 py-1.5 bg-slate-100 rounded-lg">Pista completa 🎾</div>
+                            `}
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openMatchModal() {
+            document.getElementById('matchModal').classList.remove('hidden');
+            document.getElementById('matchP1').value = currentUser;
+            document.getElementById('matchP2').value = "Hueco Libre";
+            document.getElementById('matchP3').value = "Hueco Libre";
+            document.getElementById('matchP4').value = "Hueco Libre";
+            document.getElementById('matchDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeMatchModal() {
+            document.getElementById('matchModal').classList.add('hidden');
+        }
+
+        function toggleScoreInput(val) {
+            const container = document.getElementById('scoreContainer');
+            if (val === 'Finalizado') container.classList.remove('hidden');
+            else container.classList.add('hidden');
+        }
+
+        function saveMatch(e) {
+            e.preventDefault();
+            const date = document.getElementById('matchDate').value;
+            const time = document.getElementById('matchTime').value;
+            const p1 = document.getElementById('matchP1').value;
+            const p2 = document.getElementById('matchP2').value;
+            const p3 = document.getElementById('matchP3').value;
+            const p4 = document.getElementById('matchP4').value;
+            const status = document.getElementById('matchStatus').value;
+            const score = document.getElementById('matchScore').value;
+
+            const newMatch = {
+                id: 'm_' + Date.now(),
+                date, time, p1, p2, p3, p4, status, score,
+                createdBy: currentUser
+            };
+
+            state.matches.unshift(newMatch);
+            saveState();
+            closeMatchModal();
+            renderMatches();
+            renderCalendar();
+            renderRankings();
+            showToast("Partido guardado correctamente", "success");
+        }
+
+        function claimMatchSlot(matchId) {
+            const match = state.matches.find(m => m.id === matchId);
+            if (!match) return;
+
+            if (match.p1 === 'Hueco Libre') match.p1 = currentUser;
+            else if (match.p2 === 'Hueco Libre') match.p2 = currentUser;
+            else if (match.p3 === 'Hueco Libre') match.p3 = currentUser;
+            else if (match.p4 === 'Hueco Libre') match.p4 = currentUser;
+
+            saveState();
+            renderMatches();
+            renderCalendar();
+            showToast(`¡Te has apuntado al partido como ${currentUser}!`, "success");
+        }
+
+        function deleteMatch(matchId) {
+            if (confirm("¿Seguro que deseas eliminar este partido?")) {
+                state.matches = state.matches.filter(m => m.id !== matchId);
+                saveState();
+                renderMatches();
+                renderCalendar();
+                renderRankings();
+                showToast("Partido borrado", "info");
+            }
+        }
+
+        // 3. CALENDARIO
+        function changeMonth(dir) {
+            calendarDate.setMonth(calendarDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function resetCalendarToToday() {
+            calendarDate = new Date();
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('calendarMonthTitle').innerText = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            let startingDay = firstDay.getDay() - 1; // 0 for Monday
+            if (startingDay < 0) startingDay = 6; // Sunday
+
+            const totalDays = lastDay.getDate();
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Blank spaces
+            for (let i = 0; i < startingDay; i++) {
+                grid.innerHTML += `<div class="h-24 bg-slate-50/40 rounded-xl border border-slate-100 opacity-40"></div>`;
+            }
+
+            // Month days
+            for (let day = 1; day <= totalDays; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                // Highlight 5 official league dates
+                const isLeagueDay = LEAGUE_DATES.some(l => l.date === dateStr);
+                const dayMatches = state.matches.filter(m => m.date === dateStr);
+
+                grid.innerHTML += `
+                    <div class="h-24 p-1.5 rounded-xl border flex flex-col justify-between transition ${
+                        isLeagueDay 
+                            ? 'bg-gradient-to-br from-orange-500 to-amber-600 text-white border-orange-400 shadow-md font-bold ring-2 ring-orange-400' 
+                            : 'bg-white border-slate-200 text-slate-800 hover:border-padel-400'
+                    }">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black ${isLeagueDay ? 'text-white' : 'text-slate-900'}">${day}</span>
+                            ${isLeagueDay ? '<span class="text-[8px] bg-white text-orange-600 px-1 rounded font-black uppercase">Jornada Liga</span>' : ''}
+                        </div>
+
+                        <div class="space-y-1 overflow-y-auto hide-scrollbar flex-1 my-1">
+                            ${dayMatches.map(m => `
+                                <div class="text-[9px] ${isLeagueDay ? 'bg-black/30 text-white' : 'bg-padel-50 text-padel-900 border border-padel-200'} rounded p-1 truncate font-bold">
+                                    🎾 ${m.time} - ${m.p1}/${m.p2} vs ${m.p3}/${m.p4}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 4. RANKINGS Y ANALÍTICAS
+        function renderRankings() {
+            const period = document.getElementById('rankingPeriodSelect').value;
+            let filtered = state.matches.filter(m => m.status === 'Finalizado' && m.score);
+
+            if (period === 'p1') filtered = filtered.filter(m => m.date >= '2026-11-28' && m.date <= '2026-12-12');
+            else if (period === 'p2') filtered = filtered.filter(m => m.date >= '2026-12-12' && m.date <= '2027-01-23');
+            else if (period === 'p3') filtered = filtered.filter(m => m.date >= '2027-01-23' && m.date <= '2027-02-13');
+            else if (period === 'p4') filtered = filtered.filter(m => m.date >= '2027-02-13' && m.date <= '2027-03-20');
+
+            const stats = {};
+            ALL_PLAYERS.forEach(p => {
+                stats[p] = { pj: 0, pg: 0, pp: 0, setsW: 0, setsL: 0 };
+            });
+
+            const pairStats = {};
+
+            filtered.forEach(m => {
+                const p1 = m.p1, p2 = m.p2, p3 = m.p3, p4 = m.p4;
+                const sets = m.score.split(' ');
+                let p1Sets = 0, p2Sets = 0;
+
+                sets.forEach(s => {
+                    const parts = s.split('-');
+                    if (parts.length === 2) {
+                        const s1 = parseInt(parts[0]) || 0;
+                        const s2 = parseInt(parts[1]) || 0;
+                        if (s1 > s2) p1Sets++;
+                        else if (s2 > s1) p2Sets++;
+                    }
+                });
+
+                const p1Won = p1Sets > p2Sets;
+
+                // Individual updates
+                [p1, p2].forEach(p => {
+                    if (stats[p]) {
+                        stats[p].pj++;
+                        if (p1Won) stats[p].pg++; else stats[p].pp++;
+                        stats[p].setsW += p1Sets;
+                        stats[p].setsL += p2Sets;
+                    }
+                });
+
+                [p3, p4].forEach(p => {
+                    if (stats[p]) {
+                        stats[p].pj++;
+                        if (!p1Won) stats[p].pg++; else stats[p].pp++;
+                        stats[p].setsW += p2Sets;
+                        stats[p].setsL += p1Sets;
+                    }
+                });
+
+                // Pairs updates
+                if (ALL_PLAYERS.includes(p1) && ALL_PLAYERS.includes(p2)) {
+                    const pairKey = [p1, p2].sort().join(' & ');
+                    if (!pairStats[pairKey]) pairStats[pairKey] = { pj: 0, pg: 0, pp: 0 };
+                    pairStats[pairKey].pj++;
+                    if (p1Won) pairStats[pairKey].pg++; else pairStats[pairKey].pp++;
+                }
+                if (ALL_PLAYERS.includes(p3) && ALL_PLAYERS.includes(p4)) {
+                    const pairKey = [p3, p4].sort().join(' & ');
+                    if (!pairStats[pairKey]) pairStats[pairKey] = { pj: 0, pg: 0, pp: 0 };
+                    pairStats[pairKey].pj++;
+                    if (!p1Won) pairStats[pairKey].pg++; else pairStats[pairKey].pp++;
+                }
+            });
+
+            // Individual sort
+            const sortedIndiv = Object.keys(stats).map(name => ({
+                name, ...stats[name],
+                winPct: stats[name].pj > 0 ? Math.round((stats[name].pg / stats[name].pj) * 100) : 0
+            })).sort((a, b) => b.pg - a.pg || b.winPct - a.winPct || b.setsW - a.setsW);
+
+            document.getElementById('individualRankingBody').innerHTML = sortedIndiv.map((p, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-bold text-slate-400">${idx + 1}</td>
+                    <td class="p-2.5 font-extrabold text-slate-900">${p.name}</td>
+                    <td class="p-2.5 text-center font-bold">${p.pj}</td>
+                    <td class="p-2.5 text-center font-bold text-emerald-600">${p.pg}</td>
+                    <td class="p-2.5 text-center font-bold text-rose-500">${p.pp}</td>
+                    <td class="p-2.5 text-center font-bold text-padel-600">${p.winPct}%</td>
+                    <td class="p-2.5 text-center font-semibold text-slate-500">${p.setsW}/${p.setsL}</td>
+                </tr>
+            `).join('');
+
+            // Pairs sort
+            const sortedPairs = Object.keys(pairStats).map(pair => ({
+                pair, ...pairStats[pair],
+                winPct: pairStats[pair].pj > 0 ? Math.round((pairStats[pair].pg / pairStats[pair].pj) * 100) : 0
+            })).sort((a, b) => b.pg - a.pg || b.winPct - a.winPct);
+
+            document.getElementById('pairsRankingBody').innerHTML = sortedPairs.length ? sortedPairs.map((p, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-bold text-slate-400">${idx + 1}</td>
+                    <td class="p-2.5 font-extrabold text-slate-900">${p.pair}</td>
+                    <td class="p-2.5 text-center font-bold">${p.pj}</td>
+                    <td class="p-2.5 text-center font-bold text-emerald-600">${p.pg}</td>
+                    <td class="p-2.5 text-center font-bold text-rose-500">${p.pp}</td>
+                    <td class="p-2.5 text-center font-bold text-padel-600">${p.winPct}%</td>
+                </tr>
+            `).join('') : `<tr><td colspan="6" class="text-center py-4 text-slate-400">No hay partidas de parejas finalizadas aún</td></tr>`;
+        }
+
+        // 5. DISPONIBILIDAD LIGA
+        function renderLeagueAvailability() {
+            const container = document.getElementById('leagueAvailabilityModules');
+            
+            container.innerHTML = LEAGUE_DATES.map(lDate => {
+                return `
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                        <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
+                            <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-trophy text-orange-500"></i> ${lDate.label}
+                            </h3>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse bg-white rounded-xl overflow-hidden shadow-sm">
+                                <thead>
+                                    <tr class="bg-slate-100 text-[10px] font-extrabold uppercase text-slate-500 border-b border-slate-200">
+                                        <th class="p-3">Jugador</th>
+                                        ${LEAGUE_SLOTS.map(slot => `<th class="p-3 text-center">${slot} h</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs font-medium">
+                                    ${ALL_PLAYERS.map(playerName => {
+                                        const isMe = (playerName === currentUser);
+                                        const playerSlots = state.availability[playerName] || {};
+
+                                        return `
+                                            <tr class="${isMe ? 'bg-padel-50/60 font-bold' : ''}">
+                                                <td class="p-3 flex items-center gap-2 font-extrabold text-slate-900">
+                                                    <span>${playerName}</span>
+                                                    ${isMe ? '<span class="text-[9px] font-black text-padel-600 uppercase">(Tú)</span>' : ''}
+                                                </td>
+                                                ${LEAGUE_SLOTS.map(slot => {
+                                                    const key = `${lDate.date}_${slot}`;
+                                                    const status = playerSlots[key] || 'sin_responder';
+
+                                                    if (isMe) {
+                                                        return `
+                                                            <td class="p-2 text-center">
+                                                                <div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
+                                                                    <button onclick="setMyAvailability('${lDate.date}', '${slot}', 'disponible')" title="Disponible" class="px-2 py-1 text-[10px] rounded font-bold transition ${status === 'disponible' ? 'bg-emerald-600 text-white shadow' : 'text-slate-500 hover:text-slate-800'}">✓</button>
+                                                                    <button onclick="setMyAvailability('${lDate.date}', '${slot}', 'duda')" title="Duda" class="px-2 py-1 text-[10px] rounded font-bold transition ${status === 'duda' ? 'bg-amber-500 text-white shadow' : 'text-slate-500 hover:text-slate-800'}">?</button>
+                                                                    <button onclick="setMyAvailability('${lDate.date}', '${slot}', 'no')" title="No disponible" class="px-2 py-1 text-[10px] rounded font-bold transition ${status === 'no' ? 'bg-rose-600 text-white shadow' : 'text-slate-500 hover:text-slate-800'}">✕</button>
+                                                                </div>
+                                                            </td>
+                                                        `;
+                                                    } else {
+                                                        const badge = status === 'disponible' 
+                                                            ? '<span class="bg-emerald-100 text-emerald-800 font-extrabold text-[10px] px-2.5 py-1 rounded-md">Disponible</span>'
+                                                            : status === 'duda'
+                                                            ? '<span class="bg-amber-100 text-amber-800 font-extrabold text-[10px] px-2.5 py-1 rounded-md">Duda</span>'
+                                                            : status === 'no'
+                                                            ? '<span class="bg-rose-100 text-rose-800 font-extrabold text-[10px] px-2.5 py-1 rounded-md">No</span>'
+                                                            : '<span class="text-slate-300 font-normal text-[10px]">Sin responder</span>';
+                                                        return `<td class="p-3 text-center">${badge}</td>`;
+                                                    }
+                                                }).join('')}
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setMyAvailability(date, slot, status) {
+            if (!state.availability[currentUser]) state.availability[currentUser] = {};
+            const key = `${date}_${slot}`;
+            state.availability[currentUser][key] = status;
+            saveState();
+            renderLeagueAvailability();
+            showToast("Disponibilidad de jornada guardada", "success");
+        }
+
+        // 6. FOTOGRAFÍAS DE EQUIPO
+        function renderPhotos() {
+            const container = document.getElementById('photosGrid');
+            if (state.photos.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-images text-slate-300 text-4xl mb-2"></i>
+                        <p class="text-xs font-bold text-slate-500">No hay fotografías publicadas en la galería.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = state.photos.map(p => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 flex flex-col justify-between group">
+                    <div class="relative overflow-hidden cursor-pointer" onclick="openLightbox('${p.url}', '${p.caption}')">
+                        <img src="${p.url}" alt="${p.caption}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400/22c55e/white?text=Foto+Opentrotters'">
+                    </div>
+                    <div class="p-3 flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-slate-900 text-xs truncate max-w-[180px]">${p.caption}</p>
+                            <span class="text-[10px] font-semibold text-slate-400">Subida por ${p.uploader || 'Equipo'}</span>
+                        </div>
+                        <button onclick="triggerDeletePhoto('${p.id}')" title="Borrar foto (requiere clave Admin)" class="text-slate-300 hover:text-rose-600 text-xs transition p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openPhotoModal() {
+            document.getElementById('photoModal').classList.remove('hidden');
+        }
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.add('hidden');
+            base64PhotoTemp = "";
+        }
+
+        function convertPhotoFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64PhotoTemp = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function savePhoto(e) {
+            e.preventDefault();
+            const urlInput = document.getElementById('photoUrl').value;
+            const caption = document.getElementById('photoCaption').value;
+            const finalUrl = base64PhotoTemp || urlInput;
+
+            if (!finalUrl) {
+                showToast("Por favor selecciona un archivo o escribe una URL", "error");
+                return;
+            }
+
+            const newPhoto = {
+                id: 'p_' + Date.now(),
+                url: finalUrl,
+                caption,
+                uploader: currentUser,
+                createdAt: Date.now()
+            };
+
+            state.photos.unshift(newPhoto);
+            saveState();
+            closePhotoModal();
+            renderPhotos();
+            showToast("Foto añadida a la galería", "success");
+        }
+
+        function triggerDeletePhoto(id) {
+            deletePhotoTargetId = id;
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            deletePhotoTargetId = null;
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function confirmAdminDelete() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass !== 'Admin2027') {
+                showToast("Contraseña de administrador incorrecta", "error");
+                return;
+            }
+
+            if (deletePhotoTargetId) {
+                state.photos = state.photos.filter(p => p.id !== deletePhotoTargetId);
+                saveState();
+                closeAdminModal();
+                renderPhotos();
+                showToast("Foto eliminada correctamente", "info");
+            }
+        }
+
+        function openLightbox(url, caption) {
+            document.getElementById('lightboxImg').src = url;
+            document.getElementById('lightboxCaption').innerText = caption;
+            document.getElementById('lightboxModal').classList.remove('hidden');
+        }
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+        }
+
+        // 7. CHAT GRUPAL
+        function renderChatMessages() {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = state.messages.map(msg => {
+                const isMe = (msg.sender === currentUser);
+                const timeStr = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+                return `
+                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                        <span class="text-[10px] font-extrabold text-slate-400 mb-0.5 px-1">${msg.sender} • ${timeStr}</span>
+                        <div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs font-medium shadow-sm ${
+                            isMe 
+                                ? 'bg-padel-600 text-white rounded-tr-none' 
+                                : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none'
+                        }">
+                            ${msg.text}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addEmoji(emoji) {
+            const input = document.getElementById('chatInput');
+            input.value += emoji;
+            input.focus();
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const newMsg = {
+                id: 'msg_' + Date.now(),
+                sender: currentUser,
+                text,
+                createdAt: Date.now()
+            };
+
+            state.messages.push(newMsg);
+            saveState();
+            input.value = '';
+            renderChatMessages();
+        }
+
+        // SETTINGS & JSON EXPORT / IMPORT
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `opentrotters_backup_${new Date().toISOString().split('T')[0]}.json`);
+            dlAnchorElem.click();
+            showToast("Copia de seguridad exportada en JSON", "success");
+        }
+
+        function importDataJSON(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (imported && imported.players && imported.matches) {
+                            state = imported;
+                            saveState();
+                            location.reload();
+                        } else {
+                            showToast("El archivo JSON no tiene el formato correcto", "error");
+                        }
+                    } catch (err) {
+                        showToast("Error al leer el archivo JSON", "error");
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function saveFirebaseCustomConfig() {
+            const val = document.getElementById('firebaseConfigInput').value.trim();
+            if (val) {
+                localStorage.setItem('opentrotters_fb_config', val);
+                showToast("Configuración de Firebase guardada. Reiniciando la app...", "success");
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        function resetDefaultData() {
+            if (confirm("¿Seguro que deseas reiniciar todos los datos a la configuración inicial?")) {
+                state = DEFAULT_STATE;
+                saveState();
+                location.reload();
+            }
+        }
+
+        // TOAST NOTIFICATIONS
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-slate-800';
+            toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-xl text-xs font-bold flex items-center gap-2 pointer-events-auto transition duration-300 transform translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
